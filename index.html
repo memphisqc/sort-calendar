@@ -301,11 +301,11 @@
     <div class="legend">
       <div class="legend-item">
         <div class="legend-color" style="background:#22c55e;"></div>
-        <span>Good Overall Status</span>
+        <span>On Time Overall Status</span>
       </div>
       <div class="legend-item">
         <div class="legend-color" style="background:#ef4444;"></div>
-        <span>Bad Overall Status</span>
+        <span>Delayed Overall Status</span>
       </div>
       <div class="legend-item">
         <div class="legend-color" style="background:#9ca3af;"></div>
@@ -412,8 +412,8 @@
 
     function getStatusClass(status) {
       const s = String(status || "").toLowerCase();
-      if (s === "good") return "good";
-      if (s === "bad") return "bad";
+      if (s === "On Time") return "On Time";
+      if (s === "Delayed") return "Delayed";
       return "neutral";
     }
 

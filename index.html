@@ -149,6 +149,11 @@
       background: #ef4444;
     }
 
+    .warning {
+      background: #facc15;
+      color: #111827;
+    }
+
     .neutral {
       background: #9ca3af;
     }
@@ -200,30 +205,32 @@
 
     .details-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
     }
 
     .detail-card {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
       border-radius: 14px;
-      padding: 14px;
+      padding: 16px;
     }
 
     .detail-label {
       font-size: 12px;
       color: #6b7280;
-      margin-bottom: 6px;
+      margin-bottom: 10px;
       text-transform: uppercase;
       letter-spacing: 0.4px;
+      font-weight: 700;
     }
 
     .detail-value {
-      font-size: 16px;
-      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.7;
       color: #111827;
       word-break: break-word;
+      font-weight: 600;
     }
 
     .empty-message {
@@ -301,11 +308,15 @@
     <div class="legend">
       <div class="legend-item">
         <div class="legend-color" style="background:#22c55e;"></div>
-        <span>On Time Overall Status</span>
+        <span>On Time</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background:#facc15;"></div>
+        <span>Delayed (15 or below variance)</span>
       </div>
       <div class="legend-item">
         <div class="legend-color" style="background:#ef4444;"></div>
-        <span>Delayed Overall Status</span>
+        <span>Delayed (over 15 variance)</span>
       </div>
       <div class="legend-item">
         <div class="legend-color" style="background:#9ca3af;"></div>
@@ -410,11 +421,26 @@
       });
     }
 
-    function getStatusClass(status) {
+    function getVarianceNumber(record) {
+      const raw = record["Sort Down Variance:"] || record["Sort Down Variance"] || "";
+      const cleaned = String(raw).replace(/[^0-9.-]/g, "");
+      const value = parseFloat(cleaned);
+      return isNaN(value) ? null : value;
+    }
+
+    function getStatusClass(status, record) {
       const s = String(status || "").trim().toLowerCase();
+      const variance = getVarianceNumber(record);
 
       if (s === "on time") return "good";
-      if (s === "delayed") return "bad";
+
+      if (s === "delayed") {
+        if (variance !== null) {
+          if (variance > 15) return "bad";
+          return "warning";
+        }
+        return "bad";
+      }
 
       return "neutral";
     }
@@ -476,15 +502,6 @@
       }
 
       return rows;
-    }
-
-    function detailCard(label, value) {
-      return `
-        <div class="detail-card">
-          <div class="detail-label">${label}</div>
-          <div class="detail-value">${value}</div>
-        </div>
-      `;
     }
 
     function buildMonthOptions() {
@@ -551,7 +568,7 @@
 
         if (record) {
           const status = getShortValue(record["overallStatus"], "No Data");
-          const statusClass = getStatusClass(status);
+          const statusClass = getStatusClass(status, record);
 
           const pill = document.createElement("div");
           pill.className = `status-pill ${statusClass}`;
@@ -593,6 +610,7 @@
       hoverCard.innerHTML = `
         <div class="hover-title">${formatDisplayDate(record._dateObj)}</div>
         <div class="hover-row"><strong>Status:</strong> ${getShortValue(record["overallStatus"])}</div>
+        <div class="hover-row"><strong>Sort Down Variance:</strong> ${getShortValue(record["Sort Down Variance:"] || record["Sort Down Variance"])}</div>
         <div class="hover-row"><strong>Delay Code:</strong> ${getShortValue(record["Delay Code"])}</div>
         <div class="hover-row"><strong>Narrative:</strong> ${getShortValue(record["Short Delay Narrative"])}</div>
         <div class="hover-row"><strong>Box Volume Actual:</strong> ${getShortValue(record["Box Volume Actual"])}</div>
@@ -617,28 +635,64 @@
 
       detailsContent.innerHTML = `
         <div class="details-grid">
-          ${detailCard("Overall Status", getShortValue(record["overallStatus"]))}
-          ${detailCard("Sort Date", formatDisplayDate(record._dateObj))}
-          ${detailCard("Planned Sort Down Time", getShortValue(record["Planned Sort Down Time:"]))}
-          ${detailCard("Actual Sort Down Time", getShortValue(record["Actual Sort Down Time:"]))}
-          ${detailCard("Sort Down Variance", getShortValue(record["Sort Down Variance:"]))}
-          ${detailCard("Delay Code", getShortValue(record["Delay Code"]))}
-          ${detailCard("Short Delay Narrative", getShortValue(record["Short Delay Narrative"]))}
-          ${detailCard("Box Volume Plan", getShortValue(record["Box Volume Plan"]))}
-          ${detailCard("Box Volume Actual", getShortValue(record["Box Volume Actual"]))}
-          ${detailCard("Box Volume Variance", getShortValue(record["Box Volume Variance"]))}
-          ${detailCard("SPSS Volume Plan", getShortValue(record["SPSS Volume Plan"]))}
-          ${detailCard("SPSS Volume Actual", getShortValue(record["SPSS Volume Actual"]))}
-          ${detailCard("SPSS Volume Variance", getShortValue(record["SPSS Volume Variance"]))}
-          ${detailCard("DOM IB-On Time%", getShortValue(record["Dom IB-On Time%"]))}
-          ${detailCard("INTL IB-On Time%", getShortValue(record["INTL IB-On Time%"]))}
-          ${detailCard("Arrival Rate", getShortValue(record["Arrival Rate"]))}
-          ${detailCard("Overall Inbound", getShortValue(record["Overall Inbound"]))}
-          ${detailCard("ATA of 00:30 or later", getShortValue(record["ATA of 00:30 or later"]))}
-          ${detailCard("ATA of 00:30 or later-On Time%", getShortValue(record["ATA of 00:30 or later-On Time%"]))}
-          ${detailCard("Out Time Average", getShortValue(record["Out Time Average"]))}
-          ${detailCard("Off Time Average", getShortValue(record["Off Time Average"]))}
-          ${detailCard("Lives", getShortValue(record["Lives"]))}
+
+          <div class="detail-card">
+            <div class="detail-label">Sort Performance</div>
+            <div class="detail-value">
+              Overall Status: ${getShortValue(record["overallStatus"])}<br>
+              Planned Sort Down Time: ${getShortValue(record["Planned Sort Down Time:"])}<br>
+              Actual Sort Down Time: ${getShortValue(record["Actual Sort Down Time:"])}<br>
+              Sort Down Variance: ${getShortValue(record["Sort Down Variance:"])}<br>
+              Delay Code: ${getShortValue(record["Delay Code"])}<br>
+              Short Delay Narrative: ${getShortValue(record["Short Delay Narrative"])}
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-label">Volume</div>
+            <div class="detail-value">
+              Box Volume Plan: ${getShortValue(record["Box Volume Plan"])}<br>
+              Box Volume Actual: ${getShortValue(record["Box Volume Actual"])}<br>
+              Box Volume Variance: ${getShortValue(record["Box Volume Variance"])}<br>
+              SPSS Volume Plan: ${getShortValue(record["SPSS Volume Plan"])}<br>
+              SPSS Volume Actual: ${getShortValue(record["SPSS Volume Actual"])}<br>
+              SPSS Volume Variance: ${getShortValue(record["SPSS Volume Variance"])}
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-label">Inbound</div>
+            <div class="detail-value">
+              DOM IB-On Time%: ${getShortValue(record["Dom IB-On Time%"])}<br>
+              INTL IB-On Time%: ${getShortValue(record["INTL IB-On Time%"])}<br>
+              Arrival Rate: ${getShortValue(record["Arrival Rate"])}<br>
+              Overall Inbound: ${getShortValue(record["Overall Inbound"])}
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-label">Arrival Timing</div>
+            <div class="detail-value">
+              ATA of 00:30 or later: ${getShortValue(record["ATA of 00:30 or later"])}<br>
+              ATA of 00:30 or later-On Time%: ${getShortValue(record["ATA of 00:30 or later-On Time%"])}
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-label">Outbound</div>
+            <div class="detail-value">
+              Out Time Average: ${getShortValue(record["Out Time Average"])}<br>
+              Off Time Average: ${getShortValue(record["Off Time Average"])}
+            </div>
+          </div>
+
+          <div class="detail-card">
+            <div class="detail-label">Special</div>
+            <div class="detail-value">
+              Lives: ${getShortValue(record["Lives"])}
+            </div>
+          </div>
+
         </div>
       `;
     }

@@ -141,11 +141,11 @@
       margin-bottom: 8px;
     }
 
-    .On Time {
+    .good {
       background: #22c55e;
     }
 
-    .Delayed {
+    .bad {
       background: #ef4444;
     }
 
@@ -411,9 +411,11 @@
     }
 
     function getStatusClass(status) {
-      const s = String(status || "").toLowerCase();
-      if (s === "On Time") return "On Time";
-      if (s === "Delayed") return "Delayed";
+      const s = String(status || "").trim().toLowerCase();
+
+      if (s === "on time") return "good";
+      if (s === "delayed") return "bad";
+
       return "neutral";
     }
 

@@ -169,7 +169,7 @@
       position: fixed;
       pointer-events: none;
       display: none;
-      width: 280px;
+      width: 290px;
       background: white;
       border-radius: 14px;
       box-shadow: 0 12px 30px rgba(0,0,0,0.18);
@@ -220,8 +220,6 @@
       font-size: 16px;
       color: #111827;
       margin-bottom: 12px;
-      text-transform: none;
-      letter-spacing: 0;
       font-weight: 700;
       border-bottom: 1px solid #d1d5db;
       padding-bottom: 8px;
@@ -723,7 +721,7 @@
             detailRow("After 1:00 Sum / After 3:30", record["After 1:00 Sum / After 3:30"]) +
             detailRow("After 1:00 Interval Total", record["After 1:00 Interval Total"] || record[" After 1:00 Interval Total"]) +
             detailRow("Landing Direction", record["Landing Direction"]) +
-            detailRow("North or South", record["North or South"]) +
+            detailRow("North or South", record["North or South Inbound"]) +
             detailRow("Arrival Rate", record["Arrival Rate"]) +
             detailRow("Overall Inbound", record["Overall Inbound"]) +
             detailRow("ATA of 00:30 or later", record["ATA of 00:30 or later"]) +
@@ -732,7 +730,7 @@
 
           ${detailCard("Outbound Summary",
             detailRow("Dept. Direction", record["Dept. Direction"]) +
-            detailRow("North or South", record["North or South.1"] || record["North or South 2"] || record["North or South Outbound"] || record["North or South"]) +
+            detailRow("North or South", record["North or South Outbound"]) +
             detailRow("Out Time Average", record["Out Time Average"]) +
             detailRow("Off Time Average", record["Off Time Average"]) +
             detailRow("# Adhoc Feeder Flights", record["# Adhoc Feeder Flights"]) +

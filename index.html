@@ -169,7 +169,7 @@
       position: fixed;
       pointer-events: none;
       display: none;
-      width: 260px;
+      width: 280px;
       background: white;
       border-radius: 14px;
       box-shadow: 0 12px 30px rgba(0,0,0,0.18);
@@ -205,7 +205,7 @@
 
     .details-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 14px;
     }
 
@@ -217,12 +217,14 @@
     }
 
     .detail-label {
-      font-size: 12px;
-      color: #6b7280;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
+      font-size: 16px;
+      color: #111827;
+      margin-bottom: 12px;
+      text-transform: none;
+      letter-spacing: 0;
       font-weight: 700;
+      border-bottom: 1px solid #d1d5db;
+      padding-bottom: 8px;
     }
 
     .detail-value {
@@ -231,6 +233,30 @@
       color: #111827;
       word-break: break-word;
       font-weight: 600;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(209, 213, 219, 0.5);
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-row-label {
+      color: #374151;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    .detail-row-value {
+      color: #111827;
+      text-align: right;
+      flex: 0 0 auto;
     }
 
     .empty-message {
@@ -289,6 +315,15 @@
 
       .preview-line {
         display: none;
+      }
+
+      .detail-row {
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .detail-row-value {
+        text-align: left;
       }
     }
   </style>
@@ -504,6 +539,24 @@
       return rows;
     }
 
+    function detailRow(label, value) {
+      return `
+        <div class="detail-row">
+          <div class="detail-row-label">${label}</div>
+          <div class="detail-row-value">${getShortValue(value)}</div>
+        </div>
+      `;
+    }
+
+    function detailCard(title, rowsHtml) {
+      return `
+        <div class="detail-card">
+          <div class="detail-label">${title}</div>
+          <div class="detail-value">${rowsHtml}</div>
+        </div>
+      `;
+    }
+
     function buildMonthOptions() {
       const uniqueMonths = [...new Set(
         rawData
@@ -582,7 +635,7 @@
 
           const preview2 = document.createElement("div");
           preview2.className = "preview-line";
-          preview2.textContent = `Box Var: ${getShortValue(record["Box Volume Variance"])} | SPSS Var: ${getShortValue(record["SPSS Volume Variance"])}`;
+          preview2.textContent = `Variance: ${getShortValue(record["Sort Down Variance:"] || record["Sort Down Variance"])} | Box Var: ${getShortValue(record["Box Volume Variance"])}`;
           cell.appendChild(preview2);
 
           const preview3 = document.createElement("div");
@@ -635,64 +688,77 @@
 
       detailsContent.innerHTML = `
         <div class="details-grid">
+          ${detailCard("FWSH Summary",
+            detailRow("Sort Date:", formatDisplayDate(record._dateObj)) +
+            detailRow("Planned Sort Down Time:", record["Planned Sort Down Time:"]) +
+            detailRow("Actual Sort Down Time:", record["Actual Sort Down Time:"]) +
+            detailRow("Sort Down Variance:", record["Sort Down Variance:"] || record["Sort Down Variance"]) +
+            detailRow("Delay Code", record["Delay Code"]) +
+            detailRow("Short Delay Narrative", record["Short Delay Narrative"])
+          )}
 
-          <div class="detail-card">
-            <div class="detail-label">Sort Performance</div>
-            <div class="detail-value">
-              Overall Status: ${getShortValue(record["overallStatus"])}<br>
-              Planned Sort Down Time: ${getShortValue(record["Planned Sort Down Time:"])}<br>
-              Actual Sort Down Time: ${getShortValue(record["Actual Sort Down Time:"])}<br>
-              Sort Down Variance: ${getShortValue(record["Sort Down Variance:"])}<br>
-              Delay Code: ${getShortValue(record["Delay Code"])}<br>
-              Short Delay Narrative: ${getShortValue(record["Short Delay Narrative"])}
-            </div>
-          </div>
+          ${detailCard("Box Sort",
+            detailRow("Box Volume Plan", record["Box Volume Plan"]) +
+            detailRow("Box Volume Actual", record["Box Volume Actual"]) +
+            detailRow("Box Volume Variance", record["Box Volume Variance"]) +
+            detailRow("Box Volume Plan vs Act", record["Box Volume Plan vs Act"]) +
+            detailRow("Box Average Throughput", record["Box Average Throughput"])
+          )}
 
-          <div class="detail-card">
-            <div class="detail-label">Volume</div>
-            <div class="detail-value">
-              Box Volume Plan: ${getShortValue(record["Box Volume Plan"])}<br>
-              Box Volume Actual: ${getShortValue(record["Box Volume Actual"])}<br>
-              Box Volume Variance: ${getShortValue(record["Box Volume Variance"])}<br>
-              SPSS Volume Plan: ${getShortValue(record["SPSS Volume Plan"])}<br>
-              SPSS Volume Actual: ${getShortValue(record["SPSS Volume Actual"])}<br>
-              SPSS Volume Variance: ${getShortValue(record["SPSS Volume Variance"])}
-            </div>
-          </div>
+          ${detailCard("Doc Sort",
+            detailRow("SPSS Volume Plan", record["SPSS Volume Plan"]) +
+            detailRow("SPSS Volume Actual", record["SPSS Volume Actual"]) +
+            detailRow("SPSS Volume Variance", record["SPSS Volume Variance"]) +
+            detailRow("SPSS Volume Plan vs Act", record["SPSS Volume Plan vs Act"])
+          )}
 
-          <div class="detail-card">
-            <div class="detail-label">Inbound</div>
-            <div class="detail-value">
-              DOM IB-On Time%: ${getShortValue(record["Dom IB-On Time%"])}<br>
-              INTL IB-On Time%: ${getShortValue(record["INTL IB-On Time%"])}<br>
-              Arrival Rate: ${getShortValue(record["Arrival Rate"])}<br>
-              Overall Inbound: ${getShortValue(record["Overall Inbound"])}
-            </div>
-          </div>
+          ${detailCard("Inbound Summary",
+            detailRow("Dom IB-On Time%", record["Dom IB-On Time%"]) +
+            detailRow("INTL IB-On Time%", record["INTL IB-On Time%"]) +
+            detailRow("After 1:00 Sum / 1:01 - 1:30", record["After 1:00 Sum / 1:01 - 1:30"]) +
+            detailRow("After 1:00 Sum / 1:31 - 2:00", record["After 1:00 Sum / 1:31 - 2:00"]) +
+            detailRow("After 1:00 Sum / 2:01 - 2:30", record["After 1:00 Sum / 2:01 - 2:30"]) +
+            detailRow("After 1:00 Sum / 2:31 - 3:00", record["After 1:00 Sum / 2:31 - 3:00"]) +
+            detailRow("After 1:00 Sum / 3:01 - 3:30", record["After 1:00 Sum / 3:01 - 3:30"]) +
+            detailRow("After 1:00 Sum / After 3:30", record["After 1:00 Sum / After 3:30"]) +
+            detailRow("After 1:00 Interval Total", record["After 1:00 Interval Total"] || record[" After 1:00 Interval Total"]) +
+            detailRow("Landing Direction", record["Landing Direction"]) +
+            detailRow("North or South", record["North or South"]) +
+            detailRow("Arrival Rate", record["Arrival Rate"]) +
+            detailRow("Overall Inbound", record["Overall Inbound"]) +
+            detailRow("ATA of 00:30 or later", record["ATA of 00:30 or later"]) +
+            detailRow("ATA of 00:30 or later-On Time%", record["ATA of 00:30 or later-On Time%"])
+          )}
 
-          <div class="detail-card">
-            <div class="detail-label">Arrival Timing</div>
-            <div class="detail-value">
-              ATA of 00:30 or later: ${getShortValue(record["ATA of 00:30 or later"])}<br>
-              ATA of 00:30 or later-On Time%: ${getShortValue(record["ATA of 00:30 or later-On Time%"])}
-            </div>
-          </div>
+          ${detailCard("Outbound Summary",
+            detailRow("Dept. Direction", record["Dept. Direction"]) +
+            detailRow("North or South", record["North or South.1"] || record["North or South 2"] || record["North or South Outbound"] || record["North or South"]) +
+            detailRow("Out Time Average", record["Out Time Average"]) +
+            detailRow("Off Time Average", record["Off Time Average"]) +
+            detailRow("# Adhoc Feeder Flights", record["# Adhoc Feeder Flights"]) +
+            detailRow("Total Adhoc Feeder Volume", record["Total Adhoc Feeder Volume"]) +
+            detailRow("# Truck Routes", record["# Truck Routes"]) +
+            detailRow("Truck Routes Departed <0600", record["Truck Routes Departed <0600"]) +
+            detailRow("Total Alt Moved volume on Feeders and Trucks", record["Total Alt Moved volume on Feeders and Trucks"]) +
+            detailRow("Flights worked on Recovery Sort", record["Flights worked on Recovery Sort"]) +
+            detailRow("Extended Parameter Flights/Trucks", record["Extended Parameter Flights/Trucks"])
+          )}
 
-          <div class="detail-card">
-            <div class="detail-label">Outbound</div>
-            <div class="detail-value">
-              Out Time Average: ${getShortValue(record["Out Time Average"])}<br>
-              Off Time Average: ${getShortValue(record["Off Time Average"])}
-            </div>
-          </div>
-
-          <div class="detail-card">
-            <div class="detail-label">Special</div>
-            <div class="detail-value">
-              Lives: ${getShortValue(record["Lives"])}
-            </div>
-          </div>
-
+          ${detailCard("Volume Moved/Missed",
+            detailRow("Rolled Flights / Not Worked", record["Rolled Flights / Not Worked"]) +
+            detailRow("Rolled Flight # Box Pieces / Not Worked", record["Rolled Flight # Box Pieces / Not Worked"]) +
+            detailRow("Rolled Flight # Doc Pieces / Not Worked", record["Rolled Flight # Doc Pieces / Not Worked"]) +
+            detailRow("FDEs Rolled (Worked 100pcs>)", record["FDEs Rolled (Worked 100pcs>)"]) +
+            detailRow("Estimated Rolled Pieces", record["Estimated Rolled Pieces"]) +
+            detailRow("Healthcare Volume recieved", record["Healthcare Volume recieved"]) +
+            detailRow("Healthcare volume departed", record["Healthcare volume departed"]) +
+            detailRow("Healthcare variance", record["Healthcare variance"]) +
+            detailRow("Temp Controlled without CONS", record["Temp Controlled without CONS"]) +
+            detailRow("Total Healthcare Volume Alt Moved", record["Total Healthcare Volume Alt Moved"]) +
+            detailRow("Lives", record["Lives"]) +
+            detailRow("Unprocessed Lives", record["Unprocessed Lives"]) +
+            detailRow("Lives Not moved", record["Lives Not moved"])
+          )}
         </div>
       `;
     }

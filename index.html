@@ -1,1 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sort Recap Calendar</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    select, button {
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      font-size: 14px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.15);
+    }
+
+    .calendar-wrap {
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .calendar-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      background: #1f2937;
+      color: white;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .calendar-header div {
+      padding: 14px 8px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .calendar-header div:last-child {
+      border-right: none;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      min-height: 600px;
+    }
+
+    .day-cell {
+      position: relative;
+      min-height: 120px;
+      border-right: 1px solid #e5e7eb;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 10px;
+      background: #fff;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      cursor: default;
+    }
+
+    .day-cell:hover {
+      z-index: 2;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+    }
+
+    .day-cell.empty {
+      background: #f9fafb;
+    }
+
+    .day-number {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 8px;
+    }
+
+    .good {
+      background: #22c55e;
+    }
+
+    .bad {
+      background: #ef4444;
+    }
+
+    .neutral {
+      background: #9ca3af;
+    }
+
+    .preview-line {
+      font-size: 12px;
+      line-height: 1.4;
+      color: #374151;
+      margin-bottom: 4px;
+    }
+
+    .hover-card {
+      position: fixed;
+      pointer-events: none;
+      display: none;
+      width: 260px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+      padding: 14px;
+      z-index: 9999;
+      border: 1px solid #e5e7eb;
+    }
+
+    .hover-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .hover-row {
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    .details-panel {
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      padding: 20px;
+    }
+
+    .details-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .detail-card {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .detail-label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .detail-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #111827;
+      word-break: break-word;
+    }
+
+    .empty-message {
+      padding: 20px;
+      font-size: 15px;
+      color: #6b7280;
+    }
+
+    @media (max-width: 900px) {
+      .calendar-grid {
+        min-height: auto;
+      }
+
+      .day-cell {
+        min-height: 95px;
+        padding: 8px;
+      }
+
+      .preview-line {
+        font-size: 11px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .calendar-header div {
+        font-size: 12px;
+        padding: 10px 4px;
+      }
+
+      .day-cell {
+        min-height: 88px;
+      }
+
+      .title {
+        font-size: 22px;
+      }
+
+      .day-number {
+        font-size: 12px;
+      }
+
+      .status-pill {
+        font-size: 10px;
+        padding: 4px 6px;
+      }
+
+      .preview-line {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <div class="title">Sort Recap Calendar</div>
+      <div class="controls">
+        <select id="monthSelect"></select>
+        <button id="todayBtn">Current Month</button>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background:#22c55e;"></div>
+        <span>Good Overall Status</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background:#ef4444;"></div>
+        <span>Bad Overall Status</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background:#9ca3af;"></div>
+        <span>No Data</span>
+      </div>
+    </div>
+
+    <div class="calendar-wrap">
+      <div class="calendar-header">
+        <div>Sunday</div>
+        <div>Monday</div>
+        <div>Tuesday</div>
+        <div>Wednesday</div>
+        <div>Thursday</div>
+        <div>Friday</div>
+        <div>Saturday</div>
+      </div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </div>
+
+    <div class="details-panel">
+      <div class="details-title" id="detailsTitle">Click a day to view full sort details</div>
+      <div id="detailsContent" class="empty-message">No day selected yet.</div>
+    </div>
+  </div>
+
+  <div id="hoverCard" class="hover-card"></div>
+
+  <script>
+    let rawData = [];
+    let currentMonthKey = "";
+    const calendarGrid = document.getElementById("calendarGrid");
+    const monthSelect = document.getElementById("monthSelect");
+    const todayBtn = document.getElementById("todayBtn");
+    const hoverCard = document.getElementById("hoverCard");
+    const detailsTitle = document.getElementById("detailsTitle");
+    const detailsContent = document.getElementById("detailsContent");
+
+    function cleanKey(key) {
+      return String(key || "")
+        .replace(/\u00A0/g, " ")
+        .trim();
+    }
+
+    function normalizeRecord(record) {
+      const cleaned = {};
+      Object.keys(record).forEach(key => {
+        cleaned[cleanKey(key)] = typeof record[key] === "string"
+          ? record[key].replace(/\u00A0/g, " ").trim()
+          : record[key];
+      });
+      return cleaned;
+    }
+
+    function parseExcelDate(value) {
+      if (!value) return null;
+
+      if (value instanceof Date && !isNaN(value)) {
+        return value;
+      }
+
+      const str = String(value).trim();
+
+      if (!str) return null;
+
+      const parts = str.split(/[\/\-]/);
+      if (parts.length === 3) {
+        let month = parseInt(parts[0], 10);
+        let day = parseInt(parts[1], 10);
+        let year = parseInt(parts[2], 10);
+
+        if (year < 100) year += 2000;
+
+        const d = new Date(year, month - 1, day);
+        if (!isNaN(d)) return d;
+      }
+
+      const fallback = new Date(str);
+      if (!isNaN(fallback)) return fallback;
+
+      return null;
+    }
+
+    function formatMonthKey(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    }
+
+    function formatMonthLabel(date) {
+      return date.toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric"
+      });
+    }
+
+    function formatDisplayDate(date) {
+      return date.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      });
+    }
+
+    function getStatusClass(status) {
+      const s = String(status || "").toLowerCase();
+      if (s === "good") return "good";
+      if (s === "bad") return "bad";
+      return "neutral";
+    }
+
+    function getShortValue(value, fallback = "-") {
+      if (value === undefined || value === null || value === "") return fallback;
+      return value;
+    }
+
+    function buildMonthOptions() {
+      const uniqueMonths = [...new Set(
+        rawData
+          .filter(r => r._dateObj)
+          .map(r => formatMonthKey(r._dateObj))
+      )].sort((a, b) => a.localeCompare(b));
+
+      monthSelect.innerHTML = "";
+
+      uniqueMonths.forEach(monthKey => {
+        const [year, month] = monthKey.split("-").map(Number);
+        const date = new Date(year, month - 1, 1);
+
+        const option = document.createElement("option");
+        option.value = monthKey;
+        option.textContent = formatMonthLabel(date);
+        monthSelect.appendChild(option);
+      });
+
+      if (uniqueMonths.length) {
+        const now = new Date();
+        const thisMonth = formatMonthKey(new Date(now.getFullYear(), now.getMonth(), 1));
+
+        if (uniqueMonths.includes(thisMonth)) {
+          currentMonthKey = thisMonth;
+        } else {
+          currentMonthKey = uniqueMonths[uniqueMonths.length - 1];
+        }
+
+        monthSelect.value = currentMonthKey;
+      }
+    }
+
+    function renderCalendar() {
+      calendarGrid.innerHTML = "";
+
+      if (!currentMonthKey) {
+        calendarGrid.innerHTML = '<div class="empty-message">No month data found.</div>';
+        return;
+      }
+
+      const [year, month] = currentMonthKey.split("-").map(Number);
+      const firstDay = new Date(year, month - 1, 1);
+      const lastDay = new Date(year, month, 0);
+      const startWeekday = firstDay.getDay();
+      const daysInMonth = lastDay.getDate();
+
+      const monthRecords = rawData.filter(r => formatMonthKey(r._dateObj) === currentMonthKey);
+      const recordMap = {};
+
+      monthRecords.forEach(record => {
+        recordMap[record._dateObj.getDate()] = record;
+      });
+
+      for (let i = 0; i < startWeekday; i++) {
+        const emptyCell = document.createElement("div");
+        emptyCell.className = "day-cell empty";
+        calendarGrid.appendChild(emptyCell);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement("div");
+        const record = recordMap[day];
+        cell.className = "day-cell";
+
+        const dayNumber = document.createElement("div");
+        dayNumber.className = "day-number";
+        dayNumber.textContent = day;
+        cell.appendChild(dayNumber);
+
+        if (record) {
+          const status = getShortValue(record["overallStatus"], "No Data");
+          const statusClass = getStatusClass(status);
+
+          const pill = document.createElement("div");
+          pill.className = `status-pill ${statusClass}`;
+          pill.textContent = status;
+          cell.appendChild(pill);
+
+          const preview1 = document.createElement("div");
+          preview1.className = "preview-line";
+          preview1.textContent = `Delay: ${getShortValue(record["Delay Code"])} | ${getShortValue(record["Short Delay Narrative"])}`;
+          cell.appendChild(preview1);
+
+          const preview2 = document.createElement("div");
+          preview2.className = "preview-line";
+          preview2.textContent = `Box Var: ${getShortValue(record["Box Volume Variance"])} | SPSS Var: ${getShortValue(record["SPSS Volume Variance"])}`;
+          cell.appendChild(preview2);
+
+          const preview3 = document.createElement("div");
+          preview3.className = "preview-line";
+          preview3.textContent = `Inbound: ${getShortValue(record["Overall Inbound"])} | Arrival Rate: ${getShortValue(record["Arrival Rate"])}`;
+          cell.appendChild(preview3);
+
+          cell.style.cursor = "pointer";
+
+          cell.addEventListener("mouseenter", (e) => showHoverCard(e, record));
+          cell.addEventListener("mousemove", moveHoverCard);
+          cell.addEventListener("mouseleave", hideHoverCard);
+          cell.addEventListener("click", () => showDetails(record));
+        } else {
+          const none = document.createElement("div");
+          none.className = "status-pill neutral";
+          none.textContent = "No Data";
+          cell.appendChild(none);
+        }
+
+        calendarGrid.appendChild(cell);
+      }
+    }
+
+    function showHoverCard(event, record) {
+      hoverCard.innerHTML = `
+        <div class="hover-title">${formatDisplayDate(record._dateObj)}</div>
+        <div class="hover-row"><strong>Status:</strong> ${getShortValue(record["overallStatus"])}</div>
+        <div class="hover-row"><strong>Delay Code:</strong> ${getShortValue(record["Delay Code"])}</div>
+        <div class="hover-row"><strong>Narrative:</strong> ${getShortValue(record["Short Delay Narrative"])}</div>
+        <div class="hover-row"><strong>Box Volume Actual:</strong> ${getShortValue(record["Box Volume Actual"])}</div>
+        <div class="hover-row"><strong>SPSS Volume Actual:</strong> ${getShortValue(record["SPSS Volume Actual"])}</div>
+        <div class="hover-row"><strong>Overall Inbound:</strong> ${getShortValue(record["Overall Inbound"])}</div>
+      `;
+      hoverCard.style.display = "block";
+      moveHoverCard(event);
+    }
+
+    function moveHoverCard(event) {
+      hoverCard.style.left = `${event.clientX + 14}px`;
+      hoverCard.style.top = `${event.clientY + 14}px`;
+    }
+
+    function hideHoverCard() {
+      hoverCard.style.display = "none";
+    }
+
+    function showDetails(record) {
+      detailsTitle.textContent = `Sort Details - ${formatDisplayDate(record._dateObj)}`;
+
+      detailsContent.innerHTML = `
+        <div class="details-grid">
+          ${detailCard("Overall Status", getShortValue(record["overallStatus"]))}
+          ${detailCard("Sort Date", formatDisplayDate(record._dateObj))}
+          ${detailCard("Planned Sort Down Time", getShortValue(record["Planned Sort Down Time:"]))}
+          ${detailCard("Actual Sort Down Time", getShortValue(record["Actual Sort Down Time:"]))}
+          ${detailCard("Sort Down Variance", getShortValue(record["Sort Down Variance:"]))}
+          ${detailCard("Delay Code", getShortValue(record["Delay Code"]))}
+          ${detailCard("Short Delay Narrative", getShortValue(record["Short Delay Narrative"]))}
+          ${detailCard("Box Volume Plan", getShortValue(record["Box Volume Plan"]))}
+          ${detailCard("Box Volume Actual", getShortValue(record["Box Volume Actual"]))}
+          ${detailCard("Box Volume Variance", getShortValue(record["Box Volume Variance"]))}
+          ${detailCard("SPSS Volume Plan", getShortValue(record["SPSS Volume Plan"]))}
+          ${detailCard("SPSS Volume Actual", getShortValue(record["SPSS Volume Actual"]))}
+          ${detailCard("SPSS Volume Variance", getShortValue(record["SPSS Volume Variance"]))}
+          ${detailCard("DOM IB-On Time%", getShortValue(record["Dom IB-On Time%"]))}
+          ${detailCard("INTL IB-On Time%", getShortValue(record["INTL IB-On Time%"]))}
+          ${detailCard("Arrival Rate", getShortValue(record["Arrival Rate"]))}
+          ${detailCard("Overall Inbound", getShortValue(record["Overall Inbound"]))}
+          ${detailCard("ATA of 00:30 or later", getShortValue(record["ATA of 00:30 or later"]))}
+          ${detailCard("ATA of 00:30 or later-On Time%", getShortValue(record["ATA of 00:30 or later-On Time%"]))}
+          ${detailCard("Out Time Average", getShortValue(record["Out Time Average"]))}
+          ${detailCard("Off Time Average", getShortValue(record["Off Time Average"]))}
+          ${detailCard("Lives", getShortValue(record["Lives"]))}
+        </div>
+      `;
+    }
+
+    function detailCard(label, value) {
+      return `
+        <div class="detail-card">
+          <div class="detail-label">${label}</div>
+          <div class="detail-value">${value}</div>
+        </div>
+      `;
+    }
+
+    async function loadCSV() {
+      return new Promise((resolve, reject) => {
+        Papa.parse("sort-recaps.csv", {
+          download: true,
+          header: true,
+          skipEmptyLines: true,
+          complete: function(results) {
+            resolve(results.data);
+          },
+          error: function(error) {
+            reject(error);
+          }
+        });
+      });
+    }
+
+    async function init() {
+      try {
+        const csvData = await loadCSV();
+
+        rawData = csvData
+          .map(normalizeRecord)
+          .map(record => {
+            const dateVal = record["Sort Date:"] || record["Sort Date"];
+            const parsedDate = parseExcelDate(dateVal);
+            return {
+              ...record,
+              _dateObj: parsedDate
+            };
+          })
+          .filter(record => record._dateObj);
+
+        rawData.sort((a, b) => a._dateObj - b._dateObj);
+
+        if (!rawData.length) {
+          calendarGrid.innerHTML = '<div class="empty-message">No valid sort recap data was found in sort-recaps.csv.</div>';
+          return;
+        }
+
+        buildMonthOptions();
+        renderCalendar();
+
+        monthSelect.addEventListener("change", function() {
+          currentMonthKey = this.value;
+          renderCalendar();
+        });
+
+        todayBtn.addEventListener("click", function() {
+          const now = new Date();
+          const thisMonth = formatMonthKey(new Date(now.getFullYear(), now.getMonth(), 1));
+          if ([...monthSelect.options].some(opt => opt.value === thisMonth)) {
+            currentMonthKey = thisMonth;
+            monthSelect.value = thisMonth;
+            renderCalendar();
+          }
+        });
+
+      } catch (error) {
+        console.error(error);
+        calendarGrid.innerHTML = '<div class="empty-message">Could not load sort-recaps.csv. Make sure the file is uploaded to the root of your GitHub repo.</div>';
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

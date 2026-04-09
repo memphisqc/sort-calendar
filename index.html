@@ -165,6 +165,35 @@
       margin-bottom: 4px;
     }
 
+    .delay-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .delay-icon {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      flex: 0 0 16px;
+      color: #111827;
+      vertical-align: middle;
+    }
+
+    .delay-icon svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .hover-row .delay-icon,
+    .detail-row-value .delay-icon {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 18px;
+    }
+
     .hover-card {
       position: fixed;
       pointer-events: none;
@@ -323,6 +352,12 @@
       .detail-row-value {
         text-align: left;
       }
+
+      .delay-icon {
+        width: 14px;
+        height: 14px;
+        flex: 0 0 14px;
+      }
     }
   </style>
 </head>
@@ -389,6 +424,257 @@
     const detailsTitle = document.getElementById("detailsTitle");
     const detailsContent = document.getElementById("detailsContent");
     const errorBox = document.getElementById("errorBox");
+
+    function iconWrap(svg) {
+      return `<span class="delay-icon" aria-hidden="true">${svg}</span>`;
+    }
+
+    function towerPlaneIcon() {
+      return iconWrap(`
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 52H49V37H15V52Z"/>
+            <path d="M28 37V25H36V37"/>
+            <path d="M26 25H38L42 16H22L26 25Z"/>
+            <path d="M31 16V9H33V16"/>
+            <path d="M28.5 9H35.5"/>
+            <path d="M22 52H42"/>
+            <path d="M19 43H25"/>
+            <path d="M30 43H34"/>
+            <path d="M39 43H45"/>
+            <path d="M46 20L56 24L49 25L44 31L42 27L36 24L46 20Z"/>
+          </g>
+        </svg>
+      `);
+    }
+
+    function mailboxIcon() {
+      return iconWrap(`
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M26 50V36"/>
+            <path d="M31 50V36"/>
+            <path d="M14 36H50V25C50 18 44 13 37 13H26C20 13 15 16 12 21"/>
+            <path d="M14 36V24H31C35 24 38 27 38 31V36H14Z"/>
+            <path d="M12 25L22 33L31 25"/>
+            <path d="M37 13V7H43V13"/>
+          </g>
+        </svg>
+      `);
+    }
+
+    function crewIcon() {
+      return iconWrap(`
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M24 20C24 14 28 10 32 10C36 10 40 14 40 20V24C40 30 36 34 32 34C28 34 24 30 24 24V20Z"/>
+            <path d="M22 18L26 14H38L42 18"/>
+            <path d="M26 12C27 9 29 8 32 8C35 8 37 9 38 12"/>
+            <path d="M18 52V47C18 41 23 37 29 37H35C41 37 46 41 46 47V52"/>
+            <path d="M28 52V45"/>
+            <path d="M36 52V45"/>
+            <path d="M27 37L32 42L37 37"/>
+          </g>
+        </svg>
+      `);
+    }
+
+    function monitorAlertIcon() {
+      return iconWrap(`
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="12" y="14" width="40" height="26" rx="2"/>
+            <path d="M32 40V50"/>
+            <path d="M24 50H40"/>
+            <path d="M32 21V29"/>
+            <path d="M32 34H32.1"/>
+          </g>
+        </svg>
+      `);
+    }
+
+    function weatherStormIcon() {
+      return iconWrap(`
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 42H47C53 42 57 38 57 33C57 28 54 24 49 23C48 16 42 11 34 11C25 11 18 17 17 25C10 25 6 30 6 36C6 40 10 42 15 42H20"/>
+            <path d="M31 28L25 39H31L28 50L40 35H33L38 28H31Z"/>
+          </g>
+        </svg>
+      `);
+    }
+
+    function systemsServerIcon() {
+      return iconWrap(`
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="14" y="14" width="30" height="8" rx="1.5"/>
+            <rect x="14" y="26" width="30" height="8" rx="1.5"/>
+            <rect x="14" y="38" width="30" height="8" rx="1.5"/>
+            <path d="M18 18H24"/>
+            <path d="M18 30H24"/>
+            <path d="M18 42H24"/>
+            <circle cx="39" cy="18" r="1.5" fill="currentColor" stroke="none"/>
+            <circle cx="39" cy="30" r="1.5" fill="currentColor" stroke="none"/>
+            <circle cx="39" cy="42" r="1.5" fill="currentColor" stroke="none"/>
+            <circle cx="50" cy="40" r="8"/>
+            <path d="M50 36V41"/>
+            <path d="M50 45H50.1"/>
+          </g>
+        </svg>
+      `);
+    }
+
+    function globeIcon() {
+      return iconWrap(`
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="28" cy="28" r="18"/>
+            <path d="M10 28H46"/>
+            <path d="M28 10C23 15 21 21 21 28C21 35 23 41 28 46"/>
+            <path d="M28 10C33 15 35 21 35 28C35 35 33 41 28 46"/>
+            <path d="M15 18C19 20 23 21 28 21C33 21 37 20 41 18"/>
+            <path d="M15 38C19 36 23 35 28 35C33 35 37 36 41 38"/>
+            <path d="M48 46C48 42 51 39 55 39C59 39 62 42 62 46V49H48V46Z"/>
+            <path d="M51 35C51 32.8 52.8 31 55 31C57.2 31 59 32.8 59 35C59 37.2 57.2 39 55 39C52.8 39 51 37.2 51 35Z"/>
+          </g>
+        </svg>
+      `);
+    }
+
+    function charterJetIcon() {
+      return iconWrap(`
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 38C8 38 26 34 37 31C40 30 45 26 49 22C54 17 57 15 60 15C61 15 62 16 62 18C62 22 57 30 53 34C49 38 45 42 39 45C32 49 23 52 23 52L25 48C25 48 20 45 17 42C14 39 11 39 8 38Z" fill="currentColor"/>
+          <path d="M41 35L52 28L56 32L46 32L41 35Z" fill="currentColor"/>
+        </svg>
+      `);
+    }
+
+    function feederPlaneIcon() {
+      return iconWrap(`
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 35L24 32L30 37H41L46 33H52L56 36V40L52 43H46L41 40H30L24 45L13 42L20 38L13 35Z"/>
+            <path d="M52 31V47"/>
+            <path d="M21 46L17 50"/>
+            <path d="M40 40L42 47"/>
+            <circle cx="40" cy="48" r="1.5" fill="currentColor" stroke="none"/>
+          </g>
+        </svg>
+      `);
+    }
+
+    function barrierIcon() {
+      return iconWrap(`
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="12" y="20" width="40" height="14" rx="1"/>
+            <path d="M18 20L23 34"/>
+            <path d="M28 20L33 34"/>
+            <path d="M38 20L43 34"/>
+            <path d="M16 34L12 46H19L23 34"/>
+            <path d="M41 34L45 46H52L48 34"/>
+          </g>
+        </svg>
+      `);
+    }
+
+    function volumeBoxIcon() {
+      return iconWrap(`
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 24L32 19L50 24V45L32 50L14 45V24Z"/>
+            <path d="M14 24L32 33L50 24"/>
+            <path d="M32 33V50"/>
+            <circle cx="49" cy="15" r="8"/>
+            <path d="M49 11V16"/>
+            <path d="M49 20H49.1"/>
+          </g>
+        </svg>
+      `);
+    }
+
+    function snowflakeIcon() {
+      return iconWrap(`
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M32 10V54"/>
+            <path d="M14 20L50 44"/>
+            <path d="M14 44L50 20"/>
+            <path d="M32 10L28 14"/>
+            <path d="M32 10L36 14"/>
+            <path d="M32 54L28 50"/>
+            <path d="M32 54L36 50"/>
+            <path d="M14 20L20 20"/>
+            <path d="M14 20L17 25"/>
+            <path d="M50 44L44 44"/>
+            <path d="M50 44L47 39"/>
+            <path d="M14 44L20 44"/>
+            <path d="M14 44L17 39"/>
+            <path d="M50 20L44 20"/>
+            <path d="M50 20L47 25"/>
+          </g>
+        </svg>
+      `);
+    }
+
+    function getDelayIcon(code) {
+      const cleanCode = String(code || "").trim().toUpperCase();
+
+      const iconMap = {
+        AS: towerPlaneIcon(),
+        ES: towerPlaneIcon(),
+        TS: towerPlaneIcon(),
+        BS: mailboxIcon(),
+        CS: crewIcon(),
+        SS: crewIcon(),
+        DS: monitorAlertIcon(),
+        WS: weatherStormIcon(),
+        ZS: systemsServerIcon(),
+        IS: globeIcon(),
+        IP: globeIcon(),
+        JS: charterJetIcon(),
+        QS: feederPlaneIcon(),
+        VS: barrierIcon(),
+        XS: volumeBoxIcon(),
+        YS: snowflakeIcon()
+      };
+
+      return iconMap[cleanCode] || "";
+    }
+
+    function getDelayDisplay(code, narrative) {
+      const delayCode = getShortValue(code, "");
+      const icon = getDelayIcon(delayCode);
+
+      if (!delayCode || delayCode === "-") {
+        return getShortValue(narrative);
+      }
+
+      return `
+        <span class="delay-inline">
+          ${icon}
+          <span>${delayCode}${narrative ? ` | ${getShortValue(narrative)}` : ""}</span>
+        </span>
+      `;
+    }
+
+    function getDelayCodeDisplay(code) {
+      const delayCode = getShortValue(code, "");
+      const icon = getDelayIcon(delayCode);
+
+      if (!delayCode || delayCode === "-") {
+        return getShortValue(code);
+      }
+
+      return `
+        <span class="delay-inline">
+          ${icon}
+          <span>${delayCode}</span>
+        </span>
+      `;
+    }
 
     function showError(message) {
       errorBox.style.display = "block";
@@ -628,7 +914,7 @@
 
           const preview1 = document.createElement("div");
           preview1.className = "preview-line";
-          preview1.textContent = `Delay: ${getShortValue(record["Delay Code"])} | ${getShortValue(record["Short Delay Narrative"])}`;
+          preview1.innerHTML = `Delay: ${getDelayDisplay(record["Delay Code"], record["Short Delay Narrative"])}`;
           cell.appendChild(preview1);
 
           const preview2 = document.createElement("div");
@@ -662,7 +948,7 @@
         <div class="hover-title">${formatDisplayDate(record._dateObj)}</div>
         <div class="hover-row"><strong>Status:</strong> ${getShortValue(record["overallStatus"])}</div>
         <div class="hover-row"><strong>Sort Down Variance:</strong> ${getShortValue(record["Sort Down Variance:"] || record["Sort Down Variance"])}</div>
-        <div class="hover-row"><strong>Delay Code:</strong> ${getShortValue(record["Delay Code"])}</div>
+        <div class="hover-row"><strong>Delay Code:</strong> ${getDelayCodeDisplay(record["Delay Code"])}</div>
         <div class="hover-row"><strong>Narrative:</strong> ${getShortValue(record["Short Delay Narrative"])}</div>
         <div class="hover-row"><strong>Box Volume Actual:</strong> ${getShortValue(record["Box Volume Actual"])}</div>
         <div class="hover-row"><strong>SPSS Volume Actual:</strong> ${getShortValue(record["SPSS Volume Actual"])}</div>
@@ -691,7 +977,7 @@
             detailRow("Planned Sort Down Time:", record["Planned Sort Down Time:"]) +
             detailRow("Actual Sort Down Time:", record["Actual Sort Down Time:"]) +
             detailRow("Sort Down Variance:", record["Sort Down Variance:"] || record["Sort Down Variance"]) +
-            detailRow("Delay Code", record["Delay Code"]) +
+            detailRow("Delay Code", getDelayCodeDisplay(record["Delay Code"])) +
             detailRow("Short Delay Narrative", record["Short Delay Narrative"])
           )}
 

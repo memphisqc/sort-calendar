@@ -195,6 +195,13 @@
       overflow: visible;
     }
 
+    .status-delay-icon-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
     .preview-line {
       font-size: 12px;
       line-height: 1.4;
@@ -502,20 +509,11 @@
     }
 
     function maintenanceIcon() {
-      return statusIconWrap(`
-        <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-          <g fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 16L32 30"/>
-            <path d="M16 10L22 8L30 16L28 22L22 24L14 16L16 10Z"/>
-            <path d="M30 28L54 52"/>
-            <path d="M54 52L62 60"/>
-            <path d="M62 60L58 68L68 64L64 60L68 50L58 54"/>
-            <path d="M56 16C51 16 47 20 47 25C47 26.3 47.2 27.5 47.8 28.6L30.6 45.8C29.5 45.2 28.3 45 27 45C22 45 18 49 18 54C18 59 22 63 27 63C28.3 63 29.5 62.8 30.6 62.2L47.8 45C48.9 45.6 50.1 45.8 51.4 45.8C56.4 45.8 60.4 41.8 60.4 36.8C60.4 35.5 60.2 34.3 59.6 33.2L65.8 27L64.5 20.5L58 19.2L51.8 25.4C50.7 24.8 49.5 24.6 48.2 24.6"/>
-            <path d="M22 54L29 61"/>
-            <path d="M27 49L34 56"/>
-          </g>
-        </svg>
-      `);
+      return `
+        <span class="status-delay-icon status-delay-icon-image" aria-hidden="true">
+          <img src="./maintenanceIcon.png" alt="" />
+        </span>
+      `;
     }
 
     function weatherStormIcon() {

@@ -170,6 +170,13 @@
       margin-bottom: 0;
     }
 
+    .status-icons-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
     .status-delay-icon {
       width: 22px;
       height: 22px;
@@ -189,35 +196,6 @@
       line-height: 1.4;
       color: #374151;
       margin-bottom: 4px;
-    }
-
-    .delay-inline {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      min-width: 0;
-    }
-
-    .delay-icon {
-      width: 16px;
-      height: 16px;
-      display: inline-block;
-      flex: 0 0 16px;
-      color: #111827;
-      vertical-align: middle;
-    }
-
-    .delay-icon svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .hover-row .delay-icon,
-    .detail-row-value .delay-icon {
-      width: 18px;
-      height: 18px;
-      flex: 0 0 18px;
     }
 
     .hover-card {
@@ -379,12 +357,6 @@
         text-align: left;
       }
 
-      .delay-icon {
-        width: 14px;
-        height: 14px;
-        flex: 0 0 14px;
-      }
-
       .status-delay-icon {
         width: 18px;
         height: 18px;
@@ -457,16 +429,12 @@
     const detailsContent = document.getElementById("detailsContent");
     const errorBox = document.getElementById("errorBox");
 
-    function iconWrap(svg) {
-      return `<span class="delay-icon" aria-hidden="true">${svg}</span>`;
-    }
-
     function statusIconWrap(svg) {
       return `<span class="status-delay-icon" aria-hidden="true">${svg}</span>`;
     }
 
     function towerPlaneIcon() {
-      const svg = `
+      return statusIconWrap(`
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M15 52H49V37H15V52Z"/>
@@ -481,15 +449,11 @@
             <path d="M46 20L56 24L49 25L44 31L42 27L36 24L46 20Z"/>
           </g>
         </svg>
-      `;
-      return {
-        inline: iconWrap(svg),
-        status: statusIconWrap(svg)
-      };
+      `);
     }
 
     function mailboxIcon() {
-      const svg = `
+      return statusIconWrap(`
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M26 50V36"/>
@@ -500,15 +464,11 @@
             <path d="M37 13V7H43V13"/>
           </g>
         </svg>
-      `;
-      return {
-        inline: iconWrap(svg),
-        status: statusIconWrap(svg)
-      };
+      `);
     }
 
     function crewIcon() {
-      const svg = `
+      return statusIconWrap(`
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M24 20C24 14 28 10 32 10C36 10 40 14 40 20V24C40 30 36 34 32 34C28 34 24 30 24 24V20Z"/>
@@ -520,15 +480,11 @@
             <path d="M27 37L32 42L37 37"/>
           </g>
         </svg>
-      `;
-      return {
-        inline: iconWrap(svg),
-        status: statusIconWrap(svg)
-      };
+      `);
     }
 
     function monitorAlertIcon() {
-      const svg = `
+      return statusIconWrap(`
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="12" y="14" width="40" height="26" rx="2"/>
@@ -538,51 +494,33 @@
             <path d="M32 34H32.1"/>
           </g>
         </svg>
-      `;
-      return {
-        inline: iconWrap(svg),
-        status: statusIconWrap(svg)
-      };
+      `);
     }
 
     function maintenanceIcon() {
-      const svg = `
-        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M25 39L14 50"/>
-            <path d="M29 35L40 24"/>
-            <path d="M21 43L11 53"/>
-            <path d="M41 23L47 17C45 12 40 9 35 10L39 14L36 18L31 14C30 19 32 24 37 26L43 20"/>
-            <path d="M40 24L50 34"/>
-            <path d="M46 40L54 32"/>
-            <path d="M42 44L50 52"/>
-            <path d="M48 38L56 46"/>
-          </g>
+      return statusIconWrap(`
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <path d="M32 8C18.75 8 8 18.75 8 32C8 45.25 18.75 56 32 56C45.25 56 56 45.25 56 32C56 18.75 45.25 8 32 8ZM42.74 22.96C43.65 22.01 44.82 21.37 46.08 21.11C47.34 20.85 48.65 20.98 49.84 21.48L45.98 25.34L46.64 29.29L42.69 29.95L38.83 33.81L44.41 39.39C45.19 40.17 45.19 41.43 44.41 42.21L42.21 44.41C41.43 45.19 40.17 45.19 39.39 44.41L33.81 38.83L28.53 44.11C27.75 44.89 26.49 44.89 25.71 44.11L19.89 38.29C19.11 37.51 19.11 36.25 19.89 35.47L25.17 30.19L19.59 24.61C18.81 23.83 18.81 22.57 19.59 21.79L21.79 19.59C22.57 18.81 23.83 18.81 24.61 19.59L30.19 25.17L34.05 21.31L33.39 17.36L37.34 16.7L41.2 12.84C41.7 14.03 41.83 15.34 41.57 16.6C41.31 17.86 40.67 19.03 39.72 19.94L37.33 22.33L41.25 26.25L42.74 24.76V22.96Z" fill="currentColor"/>
+          <path d="M30.19 27.43L22.72 19.96C22.52 19.76 22.2 19.76 22 19.96L19.96 22C19.76 22.2 19.76 22.52 19.96 22.72L27.43 30.19L30.19 27.43Z" fill="white"/>
+          <path d="M41.28 38.81L33.81 31.34L31.05 34.1L38.52 41.57C38.72 41.77 39.04 41.77 39.24 41.57L41.28 39.53C41.48 39.33 41.48 39.01 41.28 38.81Z" fill="white"/>
+          <path d="M31.05 29.57L34.43 26.19L37.81 29.57L34.43 32.95L31.05 29.57Z" fill="white"/>
         </svg>
-      `;
-      return {
-        inline: iconWrap(svg),
-        status: statusIconWrap(svg)
-      };
+      `);
     }
 
     function weatherStormIcon() {
-      const svg = `
+      return statusIconWrap(`
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 42H47C53 42 57 38 57 33C57 28 54 24 49 23C48 16 42 11 34 11C25 11 18 17 17 25C10 25 6 30 6 36C6 40 10 42 15 42H20"/>
             <path d="M31 28L25 39H31L28 50L40 35H33L38 28H31Z"/>
           </g>
         </svg>
-      `;
-      return {
-        inline: iconWrap(svg),
-        status: statusIconWrap(svg)
-      };
+      `);
     }
 
     function systemsServerIcon() {
-      const svg = `
+      return statusIconWrap(`
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <rect x="14" y="14" width="30" height="8" rx="1.5"/>
@@ -599,15 +537,11 @@
             <path d="M50 45H50.1"/>
           </g>
         </svg>
-      `;
-      return {
-        inline: iconWrap(svg),
-        status: statusIconWrap(svg)
-      };
+      `);
     }
 
     function globeIcon() {
-      const svg = `
+      return statusIconWrap(`
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="28" cy="28" r="18"/>
@@ -620,28 +554,20 @@
             <path d="M51 35C51 32.8 52.8 31 55 31C57.2 31 59 32.8 59 35C59 37.2 57.2 39 55 39C52.8 39 51 37.2 51 35Z"/>
           </g>
         </svg>
-      `;
-      return {
-        inline: iconWrap(svg),
-        status: statusIconWrap(svg)
-      };
+      `);
     }
 
     function charterJetIcon() {
-      const svg = `
+      return statusIconWrap(`
         <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
           <path d="M8 38C8 38 26 34 37 31C40 30 45 26 49 22C54 17 57 15 60 15C61 15 62 16 62 18C62 22 57 30 53 34C49 38 45 42 39 45C32 49 23 52 23 52L25 48C25 48 20 45 17 42C14 39 11 39 8 38Z" fill="currentColor"/>
           <path d="M41 35L52 28L56 32L46 32L41 35Z" fill="currentColor"/>
         </svg>
-      `;
-      return {
-        inline: iconWrap(svg),
-        status: statusIconWrap(svg)
-      };
+      `);
     }
 
     function feederPlaneIcon() {
-      const svg = `
+      return statusIconWrap(`
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M13 35L24 32L30 37H41L46 33H52L56 36V40L52 43H46L41 40H30L24 45L13 42L20 38L13 35Z"/>
@@ -651,15 +577,11 @@
             <circle cx="40" cy="48" r="1.5" fill="currentColor" stroke="none"/>
           </g>
         </svg>
-      `;
-      return {
-        inline: iconWrap(svg),
-        status: statusIconWrap(svg)
-      };
+      `);
     }
 
     function barrierIcon() {
-      const svg = `
+      return statusIconWrap(`
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="12" y="20" width="40" height="14" rx="1"/>
@@ -670,15 +592,11 @@
             <path d="M41 34L45 46H52L48 34"/>
           </g>
         </svg>
-      `;
-      return {
-        inline: iconWrap(svg),
-        status: statusIconWrap(svg)
-      };
+      `);
     }
 
     function volumeBoxIcon() {
-      const svg = `
+      return statusIconWrap(`
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 24L32 19L50 24V45L32 50L14 45V24Z"/>
@@ -689,15 +607,11 @@
             <path d="M49 20H49.1"/>
           </g>
         </svg>
-      `;
-      return {
-        inline: iconWrap(svg),
-        status: statusIconWrap(svg)
-      };
+      `);
     }
 
     function snowflakeIcon() {
-      const svg = `
+      return statusIconWrap(`
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M32 10V54"/>
@@ -717,14 +631,10 @@
             <path d="M50 20L47 25"/>
           </g>
         </svg>
-      `;
-      return {
-        inline: iconWrap(svg),
-        status: statusIconWrap(svg)
-      };
+      `);
     }
 
-    function getDelayIconSet(code) {
+    function getDelayIcon(code) {
       const cleanCode = String(code || "").trim().toUpperCase();
 
       const iconMap = {
@@ -748,47 +658,32 @@
         YS: snowflakeIcon()
       };
 
-      return iconMap[cleanCode] || { inline: "", status: "" };
+      return iconMap[cleanCode] || "";
     }
 
-    function getDelayIcon(code) {
-      return getDelayIconSet(code).inline;
+    function parseDelayCodes(rawCode) {
+      const value = String(rawCode || "").trim().toUpperCase();
+      if (!value) return [];
+
+      return value
+        .split(/[\/,|&+\s]+/)
+        .map(code => code.trim())
+        .filter(code => code);
     }
 
-    function getDelayStatusIcon(code) {
-      return getDelayIconSet(code).status;
-    }
+    function getDelayStatusIcons(rawCode) {
+      const codes = parseDelayCodes(rawCode);
+      const seen = new Set();
+      const icons = [];
 
-    function getDelayDisplay(code, narrative) {
-      const delayCode = getShortValue(code, "");
-      const icon = getDelayIcon(delayCode);
+      codes.forEach(code => {
+        if (seen.has(code)) return;
+        seen.add(code);
+        const icon = getDelayIcon(code);
+        if (icon) icons.push(icon);
+      });
 
-      if (!delayCode || delayCode === "-") {
-        return getShortValue(narrative);
-      }
-
-      return `
-        <span class="delay-inline">
-          ${icon}
-          <span>${delayCode}${narrative ? ` | ${getShortValue(narrative)}` : ""}</span>
-        </span>
-      `;
-    }
-
-    function getDelayCodeDisplay(code) {
-      const delayCode = getShortValue(code, "");
-      const icon = getDelayIcon(delayCode);
-
-      if (!delayCode || delayCode === "-") {
-        return getShortValue(code);
-      }
-
-      return `
-        <span class="delay-inline">
-          ${icon}
-          <span>${delayCode}</span>
-        </span>
-      `;
+      return icons.join("");
     }
 
     function showError(message) {
@@ -1031,11 +926,12 @@
           statusRow.appendChild(pill);
 
           if (String(status).trim().toLowerCase() === "delayed") {
-            const delayStatusIcon = getDelayStatusIcon(record["Delay Code"]);
-            if (delayStatusIcon) {
-              const iconHolder = document.createElement("div");
-              iconHolder.innerHTML = delayStatusIcon;
-              statusRow.appendChild(iconHolder.firstElementChild);
+            const delayIconsHtml = getDelayStatusIcons(record["Delay Code"]);
+            if (delayIconsHtml) {
+              const iconsWrap = document.createElement("div");
+              iconsWrap.className = "status-icons-wrap";
+              iconsWrap.innerHTML = delayIconsHtml;
+              statusRow.appendChild(iconsWrap);
             }
           }
 
@@ -1043,7 +939,7 @@
 
           const preview1 = document.createElement("div");
           preview1.className = "preview-line";
-          preview1.innerHTML = `Delay: ${getShortValue(record["Delay Code"])} | ${getShortValue(record["Short Delay Narrative"])}`;
+          preview1.textContent = `Delay: ${getShortValue(record["Delay Code"])} | ${getShortValue(record["Short Delay Narrative"])}`;
           cell.appendChild(preview1);
 
           const preview2 = document.createElement("div");
@@ -1077,7 +973,7 @@
         <div class="hover-title">${formatDisplayDate(record._dateObj)}</div>
         <div class="hover-row"><strong>Status:</strong> ${getShortValue(record["overallStatus"])}</div>
         <div class="hover-row"><strong>Sort Down Variance:</strong> ${getShortValue(record["Sort Down Variance:"] || record["Sort Down Variance"])}</div>
-        <div class="hover-row"><strong>Delay Code:</strong> ${getDelayCodeDisplay(record["Delay Code"])}</div>
+        <div class="hover-row"><strong>Delay Code:</strong> ${getShortValue(record["Delay Code"])}</div>
         <div class="hover-row"><strong>Narrative:</strong> ${getShortValue(record["Short Delay Narrative"])}</div>
         <div class="hover-row"><strong>Box Volume Actual:</strong> ${getShortValue(record["Box Volume Actual"])}</div>
         <div class="hover-row"><strong>SPSS Volume Actual:</strong> ${getShortValue(record["SPSS Volume Actual"])}</div>
@@ -1106,7 +1002,7 @@
             detailRow("Planned Sort Down Time:", record["Planned Sort Down Time:"]) +
             detailRow("Actual Sort Down Time:", record["Actual Sort Down Time:"]) +
             detailRow("Sort Down Variance:", record["Sort Down Variance:"] || record["Sort Down Variance"]) +
-            detailRow("Delay Code", getDelayCodeDisplay(record["Delay Code"])) +
+            detailRow("Delay Code", record["Delay Code"]) +
             detailRow("Short Delay Narrative", record["Short Delay Narrative"])
           )}
 

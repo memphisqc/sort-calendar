@@ -957,7 +957,12 @@
 
           const preview3 = document.createElement("div");
           preview3.className = "preview-line";
-          preview3.textContent = `Inbound: ${getShortValue(record["Overall Inbound"])} | Arrival Rate: ${getShortValue(record["Arrival Rate"])}`;
+          preview3.textContent = `Inbound: ${getShortValue(record["Overall Inbound"])} ])}`;
+          cell.appendChild(preview3);
+	
+	const preview3 = document.createElement("div");
+          preview3.className = "preview-line";
+          preview3.textContent = `Arrival Rate: ${getShortValue(record["Arrival Rate"])}`;
           cell.appendChild(preview3);
 
           cell.style.cursor = "pointer";

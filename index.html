@@ -947,12 +947,12 @@
 
           const preview1 = document.createElement("div");
           preview1.className = "preview-line";
-          preview1.textContent = `Delay: ${getShortValue(record["Delay Code"])} | ${getShortValue(record["Short Delay Narrative"])}`;
+          preview1.textContent = `DLY: ${getShortValue(record["Delay Code"])} | ${getShortValue(record["Short Delay Narrative"])}`;
           cell.appendChild(preview1);
 
           const preview2 = document.createElement("div");
           preview2.className = "preview-line";
-          preview2.textContent = `Variance: ${getShortValue(record["Sort Down Variance:"] || record["Sort Down Variance"])} | Box Var: ${getShortValue(record["Box Volume Variance"])}`;
+          preview2.textContent = `VAR: ${getShortValue(record["Sort Down Variance:"] || record["Sort Down Variance"])} | Box Var: ${getShortValue(record["Box Volume Variance"])}`;
           cell.appendChild(preview2);
 
           const preview3 = document.createElement("div");
